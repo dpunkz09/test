@@ -66,3 +66,17 @@ Route::post('/email/verification-notification', function (Request $request) {
 
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->middleware(['guest'])->name('password.request');
+
+Route::post('/forgot-password', [\App\Http\Controllers\PasswordResetLinkController::class, 'store'])
+    ->middleware(['guest'])->name('password.email');
+
+Route::get('/reset-password/{token}', function ($token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->middleware(['guest'])->name('password.reset');
+
+Route::post('/reset-password', [\App\Http\Controllers\NewPasswordController::class, 'store'])
+    ->middleware(['guest'])->name('password.update');
